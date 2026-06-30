@@ -1,0 +1,23 @@
+# .NET
+bin/
+obj/
+[Oo]ut/
+*.user
+*.suo
+.vs/
+.vscode/
+*.binlog
+
+# Rider
+.idea/
+
+# MAUI / mobile
+*.apk
+*.ipa
+*.app/
+
+# macOS
+.DS_Store
+
+# Build artifacts
+artifacts/

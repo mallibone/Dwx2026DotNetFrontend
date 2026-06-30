@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PrTracker.Core/PrTracker.Core.csproj" />
+    <Project Path="src/PrTracker.Maui/PrTracker.Maui.csproj" />
+    <Project Path="src/PrTracker.WinForms/PrTracker.WinForms.csproj" />
+    <Project Path="src/PrTracker.WinUI/PrTracker.WinUI.csproj">
+      <Platform Project="x86" />
+    </Project>
+    <Project Path="src/PrTracker.Wpf/PrTracker.Wpf.csproj" />
+  </Folder>
+  <Folder Name="/src/PrTracker.Blazor/">
+    <Project Path="src/PrTracker.Blazor/PrTracker.Blazor.Client/PrTracker.Blazor.Client.csproj" />
+    <Project Path="src/PrTracker.Blazor/PrTracker.Blazor/PrTracker.Blazor.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PrTracker.Core.Tests/PrTracker.Core.Tests.csproj" />
+  </Folder>
+</Solution>

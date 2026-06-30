@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="PrTracker.WinUI.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:core="using:PrTracker.Core"
+    xmlns:local="using:PrTracker.WinUI"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Padding="16" ColumnSpacing="16" RowSpacing="12">
+        <Grid.Resources>
+            <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="320" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+                   Text="Personal Records"
+                   Style="{ThemeResource TitleTextBlockStyle}" />
+
+        <!-- Master: list of records -->
+        <Grid Grid.Row="1" Grid.Column="0" RowSpacing="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <ListView Grid.Row="0"
+                      x:Name="RecordsList"
+                      ItemsSource="{x:Bind ViewModel.Records, Mode=OneWay}"
+                      SelectedItem="{x:Bind ViewModel.SelectedRecord, Mode=TwoWay}"
+                      SelectionMode="Single"
+                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                      BorderThickness="1"
+                      CornerRadius="8">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="core:PersonalRecord">
+                        <StackPanel Padding="4,8" Spacing="2">
+                            <TextBlock Text="{x:Bind Exercise}"
+                                       Style="{ThemeResource BodyStrongTextBlockStyle}" />
+                            <TextBlock Style="{ThemeResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                <Run Text="{x:Bind WeightKg}" />
+                                <Run Text="kg ×" />
+                                <Run Text="{x:Bind Reps}" />
+                                <Run Text="reps •" />
+                                <Run Text="{x:Bind Date}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Button Grid.Row="1"
+                    Command="{x:Bind ViewModel.AddCommand}"
+                    HorizontalAlignment="Stretch"
+                    Style="{ThemeResource AccentButtonStyle}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE710;" FontSize="14" />
+                    <TextBlock Text="Add record" />
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- Detail: edit pane -->
+        <Border Grid.Row="1" Grid.Column="1"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="24">
+            <StackPanel Spacing="16"
+                        Visibility="{x:Bind ViewModel.SelectedRecord, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}">
+
+                <TextBlock Text="Edit record"
+                           Style="{ThemeResource SubtitleTextBlockStyle}" />
+
+                <TextBox Header="Exercise"
+                         Text="{x:Bind ViewModel.Exercise, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                <NumberBox Header="Weight (kg)"
+                           Value="{x:Bind ViewModel.WeightKg, Mode=TwoWay}"
+                           Minimum="0"
+                           SmallChange="2.5"
+                           LargeChange="10"
+                           SpinButtonPlacementMode="Compact" />
+
+                <NumberBox Header="Reps"
+                           Value="{x:Bind ViewModel.Reps, Mode=TwoWay}"
+                           Minimum="0"
+                           SmallChange="1"
+                           LargeChange="5"
+                           SpinButtonPlacementMode="Compact" />
+
+                <DatePicker Header="Date"
+                            Date="{x:Bind ViewModel.Date, Mode=TwoWay}" />
+
+                <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
+                    <Button Content="Save"
+                            Command="{x:Bind ViewModel.SaveCommand}"
+                            Style="{ThemeResource AccentButtonStyle}" />
+                    <Button Content="Delete"
+                            Command="{x:Bind ViewModel.DeleteCommand}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>

@@ -1,0 +1,97 @@
+@page "/records/new"
+@page "/records/{Id:int}"
+@rendermode InteractiveServer
+@inject IRecordService Records
+@inject NavigationManager Nav
+
+<PageTitle>@(IsNew ? "Add record" : "Edit record")</PageTitle>
+
+<h1>@(IsNew ? "Add record" : "Edit record")</h1>
+
+@if (model is null)
+{
+    <p><em>Loading…</em></p>
+}
+else
+{
+    <EditForm Model="model" OnValidSubmit="Save">
+        <DataAnnotationsValidator />
+
+        <div class="mb-3">
+            <label class="form-label" for="exercise">Exercise</label>
+            <InputText id="exercise" class="form-control" @bind-Value="model.Exercise" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="weight">Weight (kg)</label>
+            <InputNumber id="weight" class="form-control" @bind-Value="model.WeightKg" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="reps">Reps</label>
+            <InputNumber id="reps" class="form-control" @bind-Value="model.Reps" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="date">Date</label>
+            <InputDate id="date" class="form-control" @bind-Value="model.Date" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private bool IsNew => Id is null;
+    private EditModel? model;
+
+    protected override void OnParametersSet()
+    {
+        if (IsNew)
+        {
+            model = new EditModel { Date = DateOnly.FromDateTime(DateTime.Today) };
+        }
+        else
+        {
+            var existing = Records.Get(Id!.Value);
+            model = existing is null
+                ? new EditModel { Date = DateOnly.FromDateTime(DateTime.Today) }
+                : new EditModel
+                {
+                    Exercise = existing.Exercise,
+                    WeightKg = existing.WeightKg,
+                    Reps = existing.Reps,
+                    Date = existing.Date,
+                };
+        }
+    }
+
+    private void Save()
+    {
+        if (model is null)
+        {
+            return;
+        }
+
+        if (IsNew)
+        {
+            Records.Add(new PersonalRecord(0, model.Exercise, model.WeightKg, model.Reps, model.Date));
+        }
+        else
+        {
+            Records.Update(new PersonalRecord(Id!.Value, model.Exercise, model.WeightKg, model.Reps, model.Date));
+        }
+
+        Nav.NavigateTo("/records");
+    }
+
+    private void Cancel() => Nav.NavigateTo("/records");
+
+    private sealed class EditModel
+    {
+        public string Exercise { get; set; } = string.Empty;
+        public double WeightKg { get; set; }
+        public int Reps { get; set; }
+        public DateOnly Date { get; set; }
+    }
+}

@@ -1,0 +1,67 @@
+@page "/"
+@page "/records"
+@rendermode InteractiveServer
+@inject IRecordService Service
+@inject NavigationManager Nav
+
+<PageTitle>PR Tracker</PageTitle>
+
+<h1>Personal Records</h1>
+
+<p>
+    <button class="btn btn-primary" @onclick="@(() => Nav.NavigateTo("/records/new"))">Add record</button>
+</p>
+
+@if (records is null)
+{
+    <p><em>Loading…</em></p>
+}
+else if (records.Count == 0)
+{
+    <p>No records yet. Add your first lift!</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Exercise</th>
+                <th class="text-end">Weight (kg)</th>
+                <th class="text-end">Reps</th>
+                <th>Date</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var record in records)
+            {
+                <tr>
+                    <td>@record.Exercise</td>
+                    <td class="text-end">@record.WeightKg</td>
+                    <td class="text-end">@record.Reps</td>
+                    <td>@record.Date.ToString("yyyy-MM-dd")</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-secondary"
+                                @onclick="@(() => Nav.NavigateTo($"/records/{record.Id}"))">Edit</button>
+                        <button class="btn btn-sm btn-outline-danger"
+                                @onclick="@(() => Delete(record.Id))">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IReadOnlyList<PersonalRecord>? records;
+
+    protected override void OnInitialized() => Load();
+
+    private void Load() => records = Service.GetAll();
+
+    private void Delete(int id)
+    {
+        Service.Delete(id);
+        Load();
+    }
+}
